@@ -33,6 +33,5 @@ SOCIAL = (
 # for theme gum
 THEME = "themes/gum"
 GOOGLE_ANALYTICS_ID = 'UA-44974563-1'
-# GITHUB_URL = 'https://github.com/ssbozy'
-# TWITTER_URL = 'https://twitter.com/iamsandilya'
-
+GITHUB_URL = 'https://github.com/ssbozy'
+TWITTER_URL = 'https://twitter.com/iamsandilya'
