@@ -1,13 +1,17 @@
 Title: Professional Experience
 
-I am a Software Architect at [Technicolor Research Center](http://technicolorbayarea.com). I  lead Predictive Analytics on VFX workflows at [MPC Film](http://www.moving-picture.com/film/). My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases.
+I am currently at Adobe. Previously, I was part of [Technicolor Research Center](http://technicolorbayarea.com) leading Predictive Analytics on VFX workflows for [MPC Film](http://www.moving-picture.com/film/). My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases.
 
 ###WORK EXPERIENCE
-**PROJECT LEAD , Technicolor, May '16 - Present**
+**SENIOR SOFTWARE ENGINEER, ADOBE, Feb '18 - Present**
+
+I am part of the [Adobe Sensei](https://www.adobe.com/sensei.html) group working on next gen Adobe products.
+
+**PROJECT LEAD, Technicolor, May '16 - Feb '18**
 
 I lead a group of engineers and researchers building Predictive Analytics for MPC Film VFX workflows. Our team analyzes end-to-end movie workflows to identify inefficiencies, smart team compositions and department resource allocation predictions. Our work has been published at SIGGRAPH 2017. Our analytics platform is used by worldwide MPC Film to produce Hollywood blockbusters on time. 
 
-**SOFTWARE ARCHITECT, Technicolor, Since Oct '14 - Present**
+**SOFTWARE ARCHITECT, Technicolor, Since Oct '14 - Feb '18**
 
 Building large scale recommendations and analytics apps for businesses within Technicolor. My role is to develop expertise within research groups on software and data architectures. I help build technologies to create, capture, process, utilize and visualize user and item data. Also, I am the lead developer and architect for all the backend services.
 
