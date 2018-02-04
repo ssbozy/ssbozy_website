@@ -1,2 +1,2 @@
-# ssbozy_website
-pelican based blog for www.ssbozy.com 
+# sbhamidipati_website
+pelican based blog for www.sbhamidipati.com

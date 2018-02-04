@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 AUTHOR = u'Sandilya'
 SITENAME = u'SANDILYA BHAMIDIPATI'
-SITEURL = 'http://www.ssbozy.com'
+SITEURL = 'http://www.sbhamidipati.com'
 PATH = 'content'
 TIMEZONE = 'America/Los_Angeles'
 DEFAULT_LANG = u'en'

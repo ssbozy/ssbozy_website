@@ -1,8 +1,8 @@
 Title: About
 
-###Software Architect @ Technicolor Research, Los Altos, CA.
+####Software Architect @ Technicolor Research, Los Altos, CA.
 
-I  lead Predictive Analytics on VFX workflows at MPC Film. My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases. Please check out my detailed [professional experience](work.html). Also available is a list of my [academic publications](publications.html).
+I lead Predictive Analytics on VFX workflows at MPC Film. My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases. Please check out my detailed [professional experience](work.html). Also available is a list of my [academic publications](publications.html).
 
 ###Contact
 
