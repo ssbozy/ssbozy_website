@@ -7,7 +7,7 @@ After 8 years working for [Technicolor Research and Innovation](http://technicol
 * Peter Papatheodorou (how can I forget you Pete :))
 * Brano Kveton
 * Nadia Fawaz (Thanks for being the one person I could share everything.)
-* Brian Eriksson (Looking for to working with you now)
+* Brian Eriksson (Thank you for all the advice)
 * Ajith Pudhiyaveetil (we started as Interns in 2010 and became best buddies for life)
 * Simon Feltman (only other guy with whom I could nerd all day)
 * Akshay Pushparaja (I hired him as an intern but became buddies soon)
