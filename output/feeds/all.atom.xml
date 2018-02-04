@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>SANDILYA BHAMIDIPATI</title><link href="http://www.ssbozy.com/" rel="alternate"></link><link href="http://www.ssbozy.com/feeds/all.atom.xml" rel="self"></link><id>http://www.ssbozy.com/</id><updated>2018-02-03T21:37:02-08:00</updated><entry><title>AWS Lambda and Gateway API with Zappa</title><link href="http://www.ssbozy.com/aws-lambda-and-gateway-api-with-zappa.html" rel="alternate"></link><published>2018-02-03T21:37:02-08:00</published><updated>2018-02-03T21:37:02-08:00</updated><author><name>Sandilya</name></author><id>tag:www.ssbozy.com,2018-02-03:/aws-lambda-and-gateway-api-with-zappa.html</id><summary type="html">&lt;p&gt;I develop a lot of API's as part of my job and part of it involves deploying them on publicly accessible servers for the global team to test. My current setup is as follows&lt;/p&gt;
+&lt;p&gt;Development: Python-Flask-MongoDB for local development&lt;/p&gt;
+&lt;p&gt;Deployment: Local server with globally accessible static IP or AWS EC2 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I develop a lot of API's as part of my job and part of it involves deploying them on publicly accessible servers for the global team to test. My current setup is as follows&lt;/p&gt;
+&lt;p&gt;Development: Python-Flask-MongoDB for local development&lt;/p&gt;
+&lt;p&gt;Deployment: Local server with globally accessible static IP or AWS EC2 or Heroku&lt;/p&gt;
+&lt;p&gt;As you can see, my deployment methodology is basically a pain in the neck since I have to keep maintaining either multiple copies or remote deployment for simple things. I am kinda OK with Heroku but we do not have a corporate account and hence I have to use my personal account. Hence, Heroku is off the table. Also, AWS EC2 is fine as long as I am not behind my corporate VPN. Sometimes, I use stupid things like opening a port and give access. Hence my new found setup.&lt;/p&gt;
+&lt;h3&gt;EXAMPLE API&lt;/h3&gt;
+&lt;p&gt;Let me present an example of how I plan to migrate to AWS from local developement. Here is my sample API.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;flask&lt;/span&gt;
+&lt;span class="n"&gt;app&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Flask&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="vm"&gt;__name__&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Hello World from Zappa&amp;quot;&lt;/span&gt;
+
+&lt;span class="nd"&gt;@app.route&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/saygreeting&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;methods&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;GET&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;POST&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;greeting&lt;/span&gt;&lt;span class="p"&gt;():&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;GET&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;Sandy&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;{0}, Hello World from Zappa&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;method&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;POST&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+        &lt;span class="n"&gt;name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flask&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;request&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;form&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;name&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;Data has been saved successfully&amp;quot;&lt;/span&gt;
+
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="vm"&gt;__name__&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;app&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;As you can see, there are 2 API calls here and this is how I test them. First, let me run the API.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ python mytestapp.py
+ * Running on http://127.0.0.1:5000/ &lt;span class="o"&gt;(&lt;/span&gt;Press CTRL+C to quit&lt;span class="o"&gt;)&lt;/span&gt;
+$ http http://localhost:5000
+HTTP/1.0 &lt;span class="m"&gt;200&lt;/span&gt; OK
+Content-Length: &lt;span class="m"&gt;22&lt;/span&gt;
+Content-Type: text/html&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;utf-8
+Date: Mon, &lt;span class="m"&gt;22&lt;/span&gt; Jan &lt;span class="m"&gt;2018&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;:51:57 GMT
+Server: Werkzeug/0.12 Python/2.7.14
+
+Hello World from Zappa
+
+$ http http://localhost:5000/saygreeting &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;Andrew
+HTTP/1.0 &lt;span class="m"&gt;200&lt;/span&gt; OK
+Content-Length: &lt;span class="m"&gt;30&lt;/span&gt;
+Content-Type: text/html&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;utf-8
+Date: Mon, &lt;span class="m"&gt;22&lt;/span&gt; Jan &lt;span class="m"&gt;2018&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;:53:19 GMT
+Server: Werkzeug/0.12 Python/2.7.14
+
+Andrew, Hello World from Zappa
+$ http --form POST http://localhost:5000/saygreeting &lt;span class="nv"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;Andrew
+HTTP/1.0 &lt;span class="m"&gt;200&lt;/span&gt; OK
+Content-Length: &lt;span class="m"&gt;32&lt;/span&gt;
+Content-Type: text/html&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nv"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;utf-8
+Date: Mon, &lt;span class="m"&gt;22&lt;/span&gt; Jan &lt;span class="m"&gt;2018&lt;/span&gt; &lt;span class="m"&gt;20&lt;/span&gt;:54:05 GMT
+Server: Werkzeug/0.12 Python/2.7.14
+
+Data has been saved successfully
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;ENTER ZAPPA&lt;/h3&gt;
+&lt;p&gt;Zappa has the ability to take the existing local API and deploy it to aws API Gateway and Lambda. First some installations.&lt;/p&gt;
+&lt;p&gt;Zappa depends on virtualenv to work and hence lets create a sample env.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[/tmp] $ mkdir zappa_test
+[/tmp/zappa_test] $ cd zappa_test
+[/tmp/zappa_test] $ virtualenv env
+[/tmp/zappa_test] $ ls
+env/          mytestapp.py
+[/tmp/zappa_test] $ source env/bin/activate
+(env) [/tmp/zappa_test] $
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now that we have virtualenv setup and running, we need a few more installations for the API.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(env) [/tmp/zappa_test] $ sudo pip install flask zappa
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Once this step is complete, we are deploy our API to AWS.&lt;/p&gt;
+&lt;h3&gt;ZAPPA DEPLOYMENT&lt;/h3&gt;
+&lt;h4&gt;Step 0: Make sure your AWS credentials are saved in ~/.aws/credentials file.&lt;/h4&gt;
+&lt;h4&gt;Step 1: Creating a zappa config file to setup the environment on AWS.&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(env) [/tmp/zappa_test] $ zappa init
+
+Your Zappa configuration can support multiple production stages, like &amp;#39;dev&amp;#39;, &amp;#39;staging&amp;#39;, and &amp;#39;production&amp;#39;.
+What do you want to call this environment (default &amp;#39;dev&amp;#39;): dev
+
+AWS Lambda and API Gateway are only available in certain regions. Let&amp;#39;s check to make sure you have a profile set up in one that will work.
+Okay, using profile default!
+
+Your Zappa deployments will need to be uploaded to a private S3 bucket.
+If you don&amp;#39;t have a bucket yet, we&amp;#39;ll create one for you too.
+What do you want call your bucket? (default &amp;#39;zappa-fx31d2ot5&amp;#39;):
+
+It looks like this is a Flask application.
+What&amp;#39;s the modular path to your app&amp;#39;s function?
+This will likely be something like &amp;#39;your_module.app&amp;#39;.
+Where is your app&amp;#39;s function?: mytestapp.app
+
+You can optionally deploy to all available regions in order to provide fast global service.
+If you are using Zappa for the first time, you probably don&amp;#39;t want to do this!
+Would you like to deploy this application globally? (default &amp;#39;n&amp;#39;) [y/n/(p)rimary]: n
+
+Okay, here&amp;#39;s your zappa_settings.json:
+
+{
+    &amp;quot;dev&amp;quot;: {
+        &amp;quot;app_function&amp;quot;: &amp;quot;mytestapp.app&amp;quot;,
+        &amp;quot;aws_region&amp;quot;: &amp;quot;us-west-1&amp;quot;,
+        &amp;quot;profile_name&amp;quot;: &amp;quot;default&amp;quot;,
+        &amp;quot;project_name&amp;quot;: &amp;quot;zappa-test&amp;quot;,
+        &amp;quot;runtime&amp;quot;: &amp;quot;python2.7&amp;quot;,
+        &amp;quot;s3_bucket&amp;quot;: &amp;quot;zappa-fx31d2ot5&amp;quot;
+    }
+}
+
+Does this look okay? (default &amp;#39;y&amp;#39;) [y/n]: y
+
+Done! Now you can deploy your Zappa application by executing:
+
+    $ zappa deploy dev
+
+After that, you can update your application code with:
+
+    $ zappa update dev
+
+To learn more, check out our project page on GitHub here: https://github.com/Miserlou/Zappa
+and stop by our Slack channel here: https://slack.zappa.io
+
+Enjoy!,
+ ~ Team Zappa!
+(env) [/tmp/zappa_test] $ ls
+env/                 mytestapp.py         zappa_settings.json
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Step 2: zappa deploy&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(env) [/tmp/zappa_test] $ zappa deploy
+Calling deploy for stage dev..
+Downloading and installing dependencies..
+Packaging project as zip.
+Uploading zappa-test-dev-1516655568.zip (3.4MiB)..
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 3.58M/3.58M [00:00&amp;lt;00:00, 4.51MB/s]
+Scheduling..
+Scheduled zappa-test-dev-zappa-keep-warm-handler.keep_warm_callback with expression rate(4 minutes)!
+Uploading zappa-test-dev-template-1516655573.json (1.6KiB)..
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1.62K/1.62K [00:00&amp;lt;00:00, 12.4KB/s]
+Waiting for stack zappa-test-dev to create (this can take a bit)..
+ 75%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████                                                                                  | 3/4 [00:12&amp;lt;00:04,  4.63s/res]
+Deploying API Gateway..
+Deployment complete!: https://1uybd9nwpc.execute-api.us-west-1.amazonaws.com/dev
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Step 3: Testing zappa API&lt;/h4&gt;
+&lt;p&gt;As you can see, zappa has successfully deployed my local API to AWS and provided an API endpoint. Let's test it out now.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;env&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;zappa_test&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="nt"&gt;http&lt;/span&gt; &lt;span class="nt"&gt;https&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="nt"&gt;1uybd9nwpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;execute-api&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;us-west-1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;amazonaws&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;dev&lt;/span&gt;
+&lt;span class="nt"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;200&lt;/span&gt; &lt;span class="nt"&gt;OK&lt;/span&gt;
+&lt;span class="nt"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;keep-alive&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;22&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Type&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;text&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;utf-8&lt;/span&gt;
+&lt;span class="nt"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Mon&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;22&lt;/span&gt; &lt;span class="nt"&gt;Jan&lt;/span&gt; &lt;span class="nt"&gt;2018&lt;/span&gt; &lt;span class="nt"&gt;21&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;15&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;49&lt;/span&gt; &lt;span class="nt"&gt;GMT&lt;/span&gt;
+&lt;span class="nt"&gt;Via&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;7bdfe469102431e5bc0938ba6b094eb7&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;cloudfront&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;net&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;CloudFront&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amz-Cf-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;y5TP1Wsgs-8Q8R0Rfqoad3Eg1v46ONM28aFYnp8KaTAk52qBlcTFOQ&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amzn-Trace-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;sampled&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="nt"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;1-5a665485-68c2f04b23b744ed2c1e2ca0&lt;/span&gt;
+&lt;span class="nt"&gt;X-Cache&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Miss&lt;/span&gt; &lt;span class="nt"&gt;from&lt;/span&gt; &lt;span class="nt"&gt;cloudfront&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-Remapped-Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;22&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-RequestId&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;6b299831-ffb9-11e7-b72e-5f9e514d7aeb&lt;/span&gt;
+
+&lt;span class="nt"&gt;Hello&lt;/span&gt; &lt;span class="nt"&gt;World&lt;/span&gt; &lt;span class="nt"&gt;from&lt;/span&gt; &lt;span class="nt"&gt;Zappa&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;env&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;zappa_test&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="nt"&gt;http&lt;/span&gt; &lt;span class="nt"&gt;https&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="nt"&gt;1uybd9nwpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;execute-api&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;us-west-1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;amazonaws&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;saygreeting&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;&lt;span class="nt"&gt;Andrew&lt;/span&gt;
+&lt;span class="nt"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;200&lt;/span&gt; &lt;span class="nt"&gt;OK&lt;/span&gt;
+&lt;span class="nt"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;keep-alive&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;30&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Type&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;text&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;utf-8&lt;/span&gt;
+&lt;span class="nt"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Mon&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;22&lt;/span&gt; &lt;span class="nt"&gt;Jan&lt;/span&gt; &lt;span class="nt"&gt;2018&lt;/span&gt; &lt;span class="nt"&gt;21&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;16&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;16&lt;/span&gt; &lt;span class="nt"&gt;GMT&lt;/span&gt;
+&lt;span class="nt"&gt;Via&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;3a9dca02f1ba6ecd49fee9a3ca7fcb81&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;cloudfront&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;net&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;CloudFront&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amz-Cf-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;YLstSAuAfsf3nQyJh8rE-Zz7Nev9X8UpsWtqhzkqLMOlyilH0QGo8g&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amzn-Trace-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;sampled&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="nt"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;1-5a6654a0-b56fc3cb523bd290593d14c9&lt;/span&gt;
+&lt;span class="nt"&gt;X-Cache&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Miss&lt;/span&gt; &lt;span class="nt"&gt;from&lt;/span&gt; &lt;span class="nt"&gt;cloudfront&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-Remapped-Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;30&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-RequestId&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;7ba89dcb-ffb9-11e7-a090-31d329e3f7fd&lt;/span&gt;
+
+&lt;span class="nt"&gt;Andrew&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;Hello&lt;/span&gt; &lt;span class="nt"&gt;World&lt;/span&gt; &lt;span class="nt"&gt;from&lt;/span&gt; &lt;span class="nt"&gt;Zappa&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;env&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt; &lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;zappa_test&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;$&lt;/span&gt; &lt;span class="nt"&gt;http&lt;/span&gt; &lt;span class="nt"&gt;--form&lt;/span&gt; &lt;span class="nt"&gt;POST&lt;/span&gt; &lt;span class="nt"&gt;https&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="nt"&gt;1uybd9nwpc&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;execute-api&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;us-west-1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;amazonaws&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;com&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;dev&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;saygreeting&lt;/span&gt; &lt;span class="nt"&gt;name&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;Andrew&lt;/span&gt;
+&lt;span class="nt"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;200&lt;/span&gt; &lt;span class="nt"&gt;OK&lt;/span&gt;
+&lt;span class="nt"&gt;Connection&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;keep-alive&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;32&lt;/span&gt;
+&lt;span class="nt"&gt;Content-Type&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;text&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt; &lt;span class="nt"&gt;charset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;utf-8&lt;/span&gt;
+&lt;span class="nt"&gt;Date&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Mon&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;22&lt;/span&gt; &lt;span class="nt"&gt;Jan&lt;/span&gt; &lt;span class="nt"&gt;2018&lt;/span&gt; &lt;span class="nt"&gt;21&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;16&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="nd"&gt;31&lt;/span&gt; &lt;span class="nt"&gt;GMT&lt;/span&gt;
+&lt;span class="nt"&gt;Via&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;1&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;1&lt;/span&gt; &lt;span class="nt"&gt;ce270f4a88edde7438864bc44406e83a&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;cloudfront&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nc"&gt;net&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;CloudFront&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amz-Cf-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;j1MDNcb0RuT4W7kBEaLlnEGBwVXDnSb2nq8ejTpBALENHp9gYaz_iA&lt;/span&gt;&lt;span class="o"&gt;==&lt;/span&gt;
+&lt;span class="nt"&gt;X-Amzn-Trace-Id&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;sampled&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;0&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;&lt;span class="nt"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nt"&gt;1-5a6654af-db2ed211e110fecc0086e760&lt;/span&gt;
+&lt;span class="nt"&gt;X-Cache&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;Miss&lt;/span&gt; &lt;span class="nt"&gt;from&lt;/span&gt; &lt;span class="nt"&gt;cloudfront&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-Remapped-Content-Length&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;32&lt;/span&gt;
+&lt;span class="nt"&gt;x-amzn-RequestId&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nt"&gt;84461f36-ffb9-11e7-93f0-b7b607a3b6ac&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Data has been saved successfully
+That's it. It is so simple.&lt;/p&gt;
+&lt;h4&gt;Step 4: Now lets kill it. In most cases, I like to kill the deployment after I get all the feedback I need. Here is how it is done.&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(env) [/tmp/zappa_test] $ zappa undeploy
+Calling undeploy for stage dev..
+Are you sure you want to undeploy? [y/n] y
+Deleting API Gateway..
+Waiting for stack zappa-test-dev to be deleted..
+Unscheduling..
+Unscheduled zappa-test-dev-zappa-keep-warm-handler.keep_warm_callback.
+Deleting Lambda function..
+Done!
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Thats it. I longer haveto worry about the API anymore.&lt;/p&gt;
+&lt;h4&gt;Step 5 (Bonus): Based on the feedback I receive about the API, I usually update the API code in mytestapp.py and re-deploy the API as follows&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(env) [/tmp/zappa_test] $ zappa update dev
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Thank you for dropping by.&lt;/p&gt;</content><category term="aws"></category><category term="lambda"></category><category term="zappa"></category><category term="gateway"></category><category term="api"></category></entry><entry><title>Speedtest</title><link href="http://www.ssbozy.com/speedtest.html" rel="alternate"></link><published>2018-02-03T21:00:29-08:00</published><updated>2018-02-03T21:00:29-08:00</updated><author><name>Sandilya</name></author><id>tag:www.ssbozy.com,2018-02-03:/speedtest.html</id><summary type="html">&lt;p&gt;A very good location to test download speeds. Has sample files from 5MB to 1GB.&lt;/p&gt;
+&lt;p&gt;http://www.thinkbroadband.com/download/&lt;/p&gt;</summary><content type="html">&lt;p&gt;A very good location to test download speeds. Has sample files from 5MB to 1GB.&lt;/p&gt;
+&lt;p&gt;http://www.thinkbroadband.com/download/&lt;/p&gt;</content><category term="tools"></category></entry><entry><title>Publii</title><link href="http://www.ssbozy.com/publii.html" rel="alternate"></link><published>2018-02-03T21:00:21-08:00</published><updated>2018-02-03T21:00:21-08:00</updated><author><name>Sandilya</name></author><id>tag:www.ssbozy.com,2018-02-03:/publii.html</id><summary type="html">&lt;p&gt;After coming across Publii on Hacker News, I gave it a shot to see if there is promise. It is just fantastic. I switched my blog and website from using Pelican to Publii now. The support from the team is amazing as well. Here are a few benefits of using …&lt;/p&gt;</summary><content type="html">&lt;p&gt;After coming across Publii on Hacker News, I gave it a shot to see if there is promise. It is just fantastic. I switched my blog and website from using Pelican to Publii now. The support from the team is amazing as well. Here are a few benefits of using Publii.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Supports multiple website handling. &lt;/li&gt;
+&lt;li&gt;Muliple hosting options. I am using S3 but Publii supports GitHub and other options. &lt;/li&gt;
+&lt;li&gt;Multiple themes. Currently 6 but i think in time it can easily get more.&lt;/li&gt;
+&lt;li&gt;Supports Google Analytics and Disqus. &lt;/li&gt;
+&lt;li&gt;Blazing fast rendering and S3 sync. &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I will document more features as I keep using Publii. Thanks again. &lt;/p&gt;</content><category term="tools"></category><category term="blogging"></category></entry><entry><title>Process Pools</title><link href="http://www.ssbozy.com/process-pools.html" rel="alternate"></link><published>2018-02-03T21:00:07-08:00</published><updated>2018-02-03T21:00:07-08:00</updated><author><name>Sandilya</name></author><id>tag:www.ssbozy.com,2018-02-03:/process-pools.html</id><summary type="html">&lt;p&gt;I read this beautiful article by Adam Geitgey about process pools. You can read the full article on his page. However, I wanted to have a quick note here as a good reminder to self.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note: Using a Process Pool requires passing data back and forth between separate Python processes …&lt;/strong&gt;&lt;/p&gt;</summary><content type="html">&lt;p&gt;I read this beautiful article by Adam Geitgey about process pools. You can read the full article on his page. However, I wanted to have a quick note here as a good reminder to self.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note: Using a Process Pool requires passing data back and forth between separate Python processes. If the data you are working with can’t be efficiently passed between processes, this won’t work.&lt;/strong&gt;&lt;/p&gt;
+&lt;h4&gt;Regular method to create thumbnails in Python2.7&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;glob&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;PIL&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;make_image_thumbnail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+ &lt;span class="c1"&gt;# The thumbnail will be named &amp;quot;&amp;lt;original_filename&amp;gt;_thumbnail.jpg&amp;quot;&lt;/span&gt;
+ &lt;span class="n"&gt;base_filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;file_extension&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;splitext&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="n"&gt;thumbnail_filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;{base_filename}_thumbnail{file_extension}&amp;quot;&lt;/span&gt;
+ &lt;span class="c1"&gt;# Create and save thumbnail image&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;thumbnail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;128&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;128&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;save&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;thumbnail_filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;JPEG&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;thumbnail_filename&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Loop through all jpeg files in the folder and make a thumbnail for each&lt;/span&gt;
+
+&lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;image_file&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="n"&gt;glob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;glob&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;*.jpg&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+ &lt;span class="n"&gt;thumbnail_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;make_image_thumbnail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;image_file&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A thumbnail for {image_file} was saved as {thumbnail_file}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Time it to get a good measurement of total time taken. Keep in mind here that the above code still runs as a single process on a single CPU. So most of the compute power is idle.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; python thumbnails_1.py
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Creating thumbnails using Process Pools&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;glob&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;os&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;PIL&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;concurrent.futures&lt;/span&gt;
+
+&lt;span class="k"&gt;def&lt;/span&gt; &lt;span class="nf"&gt;make_image_thumbnail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;):&lt;/span&gt;
+ &lt;span class="c1"&gt;# The thumbnail will be named &amp;quot;&amp;lt;original_filename&amp;gt;_thumbnail.jpg&amp;quot;&lt;/span&gt;
+ &lt;span class="n"&gt;base_filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;file_extension&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;os&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;path&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;splitext&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="n"&gt;thumbnail_filename&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;{base_filename}_thumbnail{file_extension}&amp;quot;&lt;/span&gt;
+ &lt;span class="c1"&gt;# Create and save thumbnail image&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;Image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;open&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filename&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;thumbnail&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;128&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;128&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+ &lt;span class="n"&gt;image&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;save&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;thumbnail_filename&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;JPEG&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;thumbnail_filename&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Create a pool of processes. By default, one is created for each CPU in your machine.&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;concurrent&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;futures&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ProcessPoolExecutor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+ &lt;span class="c1"&gt;# Get a list of files to process&lt;/span&gt;
+ &lt;span class="n"&gt;image_files&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;glob&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;glob&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;*.jpg&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+ &lt;span class="c1"&gt;# Process the list of files, but split the work across the process pool to use all CPUs!&lt;/span&gt;
+ &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="n"&gt;image_file&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;thumbnail_file&lt;/span&gt; &lt;span class="ow"&gt;in&lt;/span&gt; &lt;span class="nb"&gt;zip&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;image_files&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;make_image_thumbnail&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;image_files&lt;/span&gt;&lt;span class="p"&gt;)):&lt;/span&gt;
+ &lt;span class="k"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;A thumbnail for {image_file} was saved as {thumbnail_file}&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Always timeit.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ &lt;span class="nb"&gt;time&lt;/span&gt; python thumbnails_2.py
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Where is this approach good?&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Grabbing statistics out of a collection of separate web server log files&lt;/li&gt;
+&lt;li&gt;Parsing data out of a bunch of XML, CSV or json files&lt;/li&gt;
+&lt;li&gt;Pre-processing lots of images to create a machine learning data set&lt;/li&gt;
+&lt;/ul&gt;</content><category term="python"></category></entry><entry><title>Pelican Setup</title><link href="http://www.ssbozy.com/pelican-setup.html" rel="alternate"></link><published>2018-02-03T20:59:51-08:00</published><updated>2018-02-03T20:59:51-08:00</updated><author><name>Sandilya</name></author><id>tag:www.ssbozy.com,2018-02-03:/pelican-setup.html</id><summary type="html">&lt;p&gt;Blogging with Pelican is amazing. Just a note to self on how to setup one. I tested this on Ubuntu 16.04 with python 2.7. I created the website and set it up on AWS-S3.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ sudo apt-get install python-pip
+$ sudo pip install pelican Markdown typogrify s3cm
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Create a directory …&lt;/h4&gt;</summary><content type="html">&lt;p&gt;Blogging with Pelican is amazing. Just a note to self on how to setup one. I tested this on Ubuntu 16.04 with python 2.7. I created the website and set it up on AWS-S3.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ sudo apt-get install python-pip
+$ sudo pip install pelican Markdown typogrify s3cm
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Create a directory to host website. I created one under home.&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ mkdir mytest-website
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; mytest-website
+$ pelican-quickstart
+$ &lt;span class="nb"&gt;cd&lt;/span&gt; content
+$ touch hello-world.md
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Some local testing before I upload to S3&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ make devserver
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Setup s3 using s3cmd —configure&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$ make s3_upload
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Only the changes get uploaded. Next I will figure out how to change the default template.&lt;/p&gt;</content><category term="blogging"></category><category term="tools"></category></entry></feed>

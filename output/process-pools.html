@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Process Pools — SANDILYA BHAMIDIPATI</title>
+	<meta name="description" content="Title: Process Pools; Date: 2018-02-03; Author: Sandilya">
+	<meta name="author" content="Sandilya">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	<!--[if lt IE 9]>
+		<script src="http://www.ssbozy.com/theme/html5.js"></script>
+		<![endif]-->
+	<link href="http://www.ssbozy.com/theme/css/ipython.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<link href="//maxcdn.bootstrapcdn.com/bootswatch/3.2.0/simplex/bootstrap.min.css" rel="stylesheet">
+	<link href="http://www.ssbozy.com/theme/css/local.css" rel="stylesheet">
+	<link href="http://www.ssbozy.com/theme/css/pygments.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+	<div class="page-header">
+		<h1><a href="http://www.ssbozy.com/">SANDILYA BHAMIDIPATI</a>
+			<br>	</div>
+
+	<div style="margin: 0 auto;padding-bottom: 30px;">
+		<nav>
+			<b><a style="padding-right: 10px;" href="http://www.ssbozy.com/pages/about.html">About</a></b>|
+			<b><a style="padding-right: 10px;" href="http://www.ssbozy.com/pages/professional-experience.html">Work</a></b>|
+			<b><a style="padding-right: 10px;" href="http://www.ssbozy.com/pages/publications.html">Publications</a></b>|
+			<b><a style="padding-right: 10px;" href="http://www.ssbozy.com/feeds/all.atom.xml" type="application/atom+xml"><i class="fa fa-rss "></i> RSS </a></b>
+		</nav>
+	</div>
+
+	<div class="row">
+		<div class="col-md-8 col-md-offset-2">
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="text-center article-header">
+		<h1 itemprop="name headline" class="article-title">Process Pools</h1>
+		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Sandilya</h4>
+		</span>
+		<time datetime="2018-02-03T21:00:07.968993-08:00" itemprop="datePublished">Sat, 03 February 2018</time>
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="http://www.ssbozy.com/category/blog.html" rel="category">Blog</a>
+		</span>
+	</div>
+ 
+	<div>
+		Tags:
+		<span itemprop="keywords">
+			<a href="http://www.ssbozy.com/tag/python.html" rel="tag">python</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>I read this beautiful article by Adam Geitgey about process pools. You can read the full article on his page. However, I wanted to have a quick note here as a good reminder to self.</p>
+<p><strong>Note: Using a Process Pool requires passing data back and forth between separate Python processes. If the data you are working with can’t be efficiently passed between processes, this won’t work.</strong></p>
+<h4>Regular method to create thumbnails in Python2.7</h4>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="k">def</span> <span class="nf">make_image_thumbnail</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+ <span class="c1"># The thumbnail will be named &quot;&lt;original_filename&gt;_thumbnail.jpg&quot;</span>
+ <span class="n">base_filename</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+ <span class="n">thumbnail_filename</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{base_filename}_thumbnail{file_extension}&quot;</span>
+ <span class="c1"># Create and save thumbnail image</span>
+ <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+ <span class="n">image</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+ <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">thumbnail_filename</span><span class="p">,</span> <span class="s2">&quot;JPEG&quot;</span><span class="p">)</span>
+ <span class="k">return</span> <span class="n">thumbnail_filename</span>
+
+<span class="c1"># Loop through all jpeg files in the folder and make a thumbnail for each</span>
+
+<span class="k">for</span> <span class="n">image_file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.jpg&quot;</span><span class="p">):</span>
+ <span class="n">thumbnail_file</span> <span class="o">=</span> <span class="n">make_image_thumbnail</span><span class="p">(</span><span class="n">image_file</span><span class="p">)</span>
+ <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;A thumbnail for {image_file} was saved as {thumbnail_file}&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Time it to get a good measurement of total time taken. Keep in mind here that the above code still runs as a single process on a single CPU. So most of the compute power is idle.</p>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python thumbnails_1.py
+</pre></div>
+
+
+<h4>Creating thumbnails using Process Pools</h4>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">concurrent.futures</span>
+
+<span class="k">def</span> <span class="nf">make_image_thumbnail</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+ <span class="c1"># The thumbnail will be named &quot;&lt;original_filename&gt;_thumbnail.jpg&quot;</span>
+ <span class="n">base_filename</span><span class="p">,</span> <span class="n">file_extension</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+ <span class="n">thumbnail_filename</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;{base_filename}_thumbnail{file_extension}&quot;</span>
+ <span class="c1"># Create and save thumbnail image</span>
+ <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+ <span class="n">image</span><span class="o">.</span><span class="n">thumbnail</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+ <span class="n">image</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">thumbnail_filename</span><span class="p">,</span> <span class="s2">&quot;JPEG&quot;</span><span class="p">)</span>
+ <span class="k">return</span> <span class="n">thumbnail_filename</span>
+
+<span class="c1"># Create a pool of processes. By default, one is created for each CPU in your machine.</span>
+
+<span class="k">with</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ProcessPoolExecutor</span><span class="p">()</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+ <span class="c1"># Get a list of files to process</span>
+ <span class="n">image_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.jpg&quot;</span><span class="p">)</span>
+ <span class="c1"># Process the list of files, but split the work across the process pool to use all CPUs!</span>
+ <span class="k">for</span> <span class="n">image_file</span><span class="p">,</span> <span class="n">thumbnail_file</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">image_files</span><span class="p">,</span> <span class="n">executor</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">make_image_thumbnail</span><span class="p">,</span> <span class="n">image_files</span><span class="p">)):</span>
+ <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;A thumbnail for {image_file} was saved as {thumbnail_file}&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Always timeit.</p>
+<div class="highlight"><pre><span></span>$ <span class="nb">time</span> python thumbnails_2.py
+</pre></div>
+
+
+<h4>Where is this approach good?</h4>
+<ul>
+<li>Grabbing statistics out of a collection of separate web server log files</li>
+<li>Parsing data out of a bunch of XML, CSV or json files</li>
+<li>Pre-processing lots of images to create a machine learning data set</li>
+</ul></div>
+	<hr>
+	<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'ssbozy'; 
+    var disqus_title = 'Process Pools';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+		</div>
+	</div> 	<!-- <hr> -->
+</div> <!-- /container -->
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 text-center center-block aw-bottom">
+			<p>&copy; Sandilya 2018</p>
+		</div>
+	</div>
+</div>
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+	$("div.collapseheader").click(function () {
+		$header = $(this).children("span").first();
+		$codearea = $(this).children(".input_area");
+		$codearea.slideToggle(500, function () {
+			$header.text(function () {
+				return $codearea.is(":visible") ? "Collapse Code" : "Expand Code";
+			});
+		});
+	});
+});
+</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44974563-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- <a href="https://github.com/ssbozy"><img style="position: absolute; top: 40px; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub" /></a>
+ -->
+</body>
+</html>

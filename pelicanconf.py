@@ -3,8 +3,7 @@
 from __future__ import unicode_literals
 
 AUTHOR = u'Sandilya'
-SITENAME = u'Sandilya Bhamidipati'
-# SITESUBTITLE = 'Documenting my experimemts'
+SITENAME = u'SANDILYA BHAMIDIPATI'
 SITEURL = 'http://www.ssbozy.com'
 PATH = 'content'
 TIMEZONE = 'America/Los_Angeles'
@@ -30,8 +29,8 @@ SOCIAL = (
     ('linkedin', 'https://www.linkedin.com/in/sandilya-bhamidipati-abb36810'),
 )
 
-# for theme gum
-THEME = "themes/gum"
+# for theme
+THEME = "themes/aboutwilson"
 GOOGLE_ANALYTICS_ID = 'UA-44974563-1'
 GITHUB_URL = 'https://github.com/ssbozy'
 TWITTER_URL = 'https://twitter.com/iamsandilya'
