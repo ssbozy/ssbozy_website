@@ -1,6 +1,6 @@
 Title: Professional Experience
 
-I am currently at Adobe. Previously, I was part of [Technicolor Research Center](http://technicolorbayarea.com) leading Predictive Analytics on VFX workflows for [MPC Film](http://www.moving-picture.com/film/). My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases.
+I am currently part of Adobe Sensei Intelligent Agents group. Previously, I was part of [Technicolor Research Center](http://technicolorbayarea.com) leading Predictive Analytics on VFX workflows for [MPC Film](http://www.moving-picture.com/film/). My areas of interest include applied Machine Learning, Data mining, Distributed Systems and Distributed Databases.
 
 ###WORK EXPERIENCE
 **SENIOR SOFTWARE ENGINEER, ADOBE, Feb '18 - Present**
@@ -9,7 +9,7 @@ I am part of the [Adobe Sensei](https://www.adobe.com/sensei.html) group working
 
 **PROJECT LEAD, Technicolor, May '16 - Feb '18**
 
-I lead a group of engineers and researchers building Predictive Analytics for MPC Film VFX workflows. Our team analyzes end-to-end movie workflows to identify inefficiencies, smart team compositions and department resource allocation predictions. Our work has been published at SIGGRAPH 2017. Our analytics platform is used by worldwide MPC Film to produce Hollywood blockbusters on time. 
+I lead a group of engineers and researchers building Predictive Analytics for MPC Film VFX workflows. Our team analyzes end-to-end movie workflows to identify inefficiencies, smart team compositions and department resource allocation predictions. Our work has been published at SIGGRAPH 2017. Our analytics platform is used by worldwide MPC Film to produce Hollywood blockbusters on time.
 
 **SOFTWARE ARCHITECT, Technicolor, Since Oct '14 - Feb '18**
 
