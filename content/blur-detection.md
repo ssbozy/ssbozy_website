@@ -1,4 +1,5 @@
 Title: How I detect blurry images using OpenCV?
+Tags: opencv, python, laplacian, kernels
 
 ### Problem
 I take a lot of picture and spend a good chunk of time discarding useless ones. I needed a better technique than the brute-force version I have now.
