@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Blog — SANDILYA BHAMIDIPATI</title>
-	<meta name="description" content="All posts which refer to category Blog">
+	<title>Adding TouchID support to Terminal — SANDILYA BHAMIDIPATI</title>
+	<meta name="description" content="Title: Adding TouchID support to Terminal; Date: 2018-02-21; Author: Sandilya">
 	<meta name="author" content="Sandilya">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -37,43 +37,46 @@
 
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2">
-<h1>Category <small>Blog</small></h1>
-<table class="table">
-    <tbody>
-        <tr>
-        <td>21 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/adding-touchid-support-to-terminal.html'>Adding TouchID support to Terminal</a></td>
-        </tr>
-        <tr>
-        <td>14 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/how-i-detect-blurry-images-using-opencv.html'>How I detect blurry images using OpenCV?</a></td>
-        </tr>
-        <tr>
-        <td>04 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/last-day-at-technicolor.html'>Last day at Technicolor</a></td>
-        </tr>
-        <tr>
-        <td>03 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/aws-lambda-and-gateway-api-with-zappa.html'>AWS Lambda and Gateway API with Zappa</a></td>
-        </tr>
-        <tr>
-        <td>03 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/speedtest.html'>Speedtest</a></td>
-        </tr>
-        <tr>
-        <td>03 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/publii.html'>Publii</a></td>
-        </tr>
-        <tr>
-        <td>03 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/process-pools.html'>Process Pools</a></td>
-        </tr>
-        <tr>
-        <td>03 Feb 2018</td>
-        <td><a href='http://www.sbhamidipati.com/pelican-setup.html'>Pelican Setup</a></td>
-        </tr>
-    </tbody>
-</table>
+<div class="article" itemscope itemtype="http://schema.org/BlogPosting">
+	<div class="article-header">
+		<h1 itemprop="name headline" class="article-title">Adding TouchID support to Terminal</h1>
+<!-- 		<span itemprop="author" itemscope itemtype="http://schema.org/Person">
+			<h4 itemprop="name">Sandilya</h4>
+		</span>
+		<time datetime="2018-02-21T20:46:00.583912-08:00" itemprop="datePublished">Wed, 21 February 2018</time> -->
+	</div>
+	<div>
+		Category:
+		<span itemprop="articleSection">
+			<a href="http://www.sbhamidipati.com/category/blog.html" rel="category">Blog</a>
+		</span>
+	</div>
+	<div itemprop="articleBody" class="article-body"><p>I use terminal a lot and I have the new Macbook Pro from 2017 with a touch bar. Currently most of the apps I use support TouchID for authentication which makes my life easier as I dont have to type my password. Unfortunately, Terminal app in OSX does not support Touch ID by default. I found a nice and quick way to enable this feature. Here is the code snippet.</p>
+<div class="highlight"><pre><span></span>$ sudo vi /etc/pam.d/sudo
+</pre></div>
+
+
+<p>add the following code on line 2</p>
+<div class="highlight"><pre><span></span>auth sufficient pam_tid.so
+</pre></div>
+
+
+<p>save and exit. Now everytime I use sudo I see a prompt on the screen to use my fingerprint.</p></div>
+	<hr>
+	<h2>Comments</h2>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'blog-sbhamidipati-com'; 
+    var disqus_title = 'Adding TouchID support to Terminal';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
 		</div>
 	</div> 	<!-- <hr> -->
 </div> <!-- /container -->
